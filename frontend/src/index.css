@@ -1,0 +1,307 @@
+@import "tailwindcss";
+
+@theme {
+  --font-spiritual: 'Cinzel', serif;
+  --font-mystic: 'Great Vibes', cursive;
+  --font-forest: 'Playfair Display', serif;
+
+  --color-antique-cream: #fbfaf5;
+  --color-ethereal-peach: #fce4da;
+  --color-warm-gold: #e2b170;
+  --color-moss-olive: #606c38;
+}
+
+@layer base {
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Playfair Display', serif;
+    background-color: #fbfaf5;
+    color: #2c1d11;
+    overflow: hidden;
+  }
+}
+
+/* Hard-coded Layout Fixes for Grid and Cards (Tailwind Fallbacks) */
+.linen-card {
+  width: 90vw !important;
+  max-width: 450px !important;
+  margin: auto;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 2.5rem;
+  box-shadow: 0 20px 50px rgba(61, 43, 31, 0.12);
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.avatar-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1rem !important;
+}
+
+.large-icon-container {
+  width: 208px !important;
+  height: 208px !important;
+}
+
+/* Animations */
+@keyframes slow-sakura-fall {
+  0% {
+    transform: translateY(-10vh) rotateZ(0deg);
+    opacity: 0;
+    filter: blur(1px);
+  }
+
+  5% {
+    opacity: 0.8;
+    filter: blur(0px);
+  }
+
+  95% {
+    opacity: 0.8;
+    filter: blur(0px);
+  }
+
+  100% {
+    transform: translateY(110vh) rotateZ(180deg);
+    opacity: 0;
+    filter: blur(1px);
+  }
+}
+
+@keyframes sakura-sway {
+  0% {
+    transform: translateX(0px) rotateY(0deg) rotateX(0deg);
+  }
+
+  50% {
+    transform: translateX(40px) rotateY(45deg) rotateX(30deg);
+  }
+
+  100% {
+    transform: translateX(0px) rotateY(0deg) rotateX(0deg);
+  }
+}
+
+.sakura-petal-container {
+  position: absolute;
+  top: -10vh;
+  pointer-events: none;
+  animation: slow-sakura-fall linear infinite;
+  transform-style: preserve-3d;
+}
+
+.sakura-petal-body {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 70% 30%, #ffd6e0, #fbcfe8);
+  border-radius: 60% 0 60% 10%;
+  box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.4), 1px 1px 3px rgba(0, 0, 0, 0.1);
+  opacity: 0.9;
+  animation: sakura-sway ease-in-out infinite alternate;
+}
+
+@keyframes sunbeam-sweep {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(-45deg);
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 0.15;
+  }
+
+  100% {
+    transform: translateX(200%) translateY(200%) rotate(-45deg);
+    opacity: 0;
+  }
+}
+
+.sunbeam-streak {
+  position: absolute;
+  width: 200%;
+  height: 500px;
+  pointer-events: none;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: sunbeam-sweep 15s infinite ease-in-out;
+}
+
+@keyframes antigravity-drift {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-25px) rotate(0.5deg);
+  }
+}
+
+.antigravity-float {
+  animation: antigravity-drift 10s ease-in-out infinite;
+}
+
+@keyframes hair-sway {
+
+  0%,
+  100% {
+    transform: scale(1.05) translate(0, 0) rotate(0deg);
+  }
+
+  33% {
+    transform: scale(1.07) translate(8px, 12px) rotate(1deg);
+  }
+
+  66% {
+    transform: scale(1.06) translate(-5px, 6px) rotate(-0.5deg);
+  }
+}
+
+.hair-movement {
+  animation: hair-sway 15s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes glitter-twinkle {
+
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.2) translateY(0px);
+    filter: blur(2px);
+  }
+
+  50% {
+    opacity: 0.9;
+    transform: scale(1) translateY(-20px);
+    filter: blur(0px);
+  }
+}
+
+.glitter-particle {
+  position: absolute;
+  background: white;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  box-shadow: 0 0 15px 6px rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+  z-index: 5;
+  animation: glitter-twinkle linear infinite;
+}
+
+@keyframes flower-to-face {
+  0% {
+    transform: translate(-30vw, -20vh) scale(0.4) rotate(0deg);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(0, 10vh) scale(1.4) rotate(140deg);
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(30vw, 80vh) scale(0.6) rotate(320deg);
+    opacity: 0;
+  }
+}
+
+.flower-face {
+  animation: flower-to-face 20s linear infinite;
+  filter: blur(0.3px);
+}
+
+.canvas-grain::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  z-index: 9999;
+}
+
+.chat-room-canvas {
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #dccfb4;
+  border-radius: 9999px;
+}
+
+/* Utilities */
+.parchment-bubble {
+  border-radius: 1.5rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.painting-realm-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url("/ethereal_lady.png");
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.15);
+  animation: lady-float 40s ease-in-out infinite alternate;
+  /* Vivid, bright painting — no dimming */
+  filter: contrast(1.15) brightness(1.05) saturate(1.5);
+}
+
+.painting-realm-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  /* Very light soft vignette only at the edges — center stays fully visible */
+  background: radial-gradient(ellipse at 50% 40%, transparent 40%, rgba(20, 10, 5, 0.25) 100%);
+  pointer-events: none;
+}
+
+@keyframes lady-float {
+  0% {
+    transform: scale(1.1) translate(0, 0);
+  }
+
+  50% {
+    transform: scale(1.18) translate(-1.5%, -1%);
+  }
+
+  100% {
+    transform: scale(1.1) translate(1.5%, 1%);
+  }
+}
+
+.subtle-sigil-text {
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Crystal-clear glassmorphism — no white screen */
+.clear-glass {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(8px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 8px 32px 0 rgba(20, 10, 5, 0.15) !important;
+}

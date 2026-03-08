@@ -1,0 +1,22 @@
+{
+  "name": "Enchanted",
+  "short_name": "Enchanted",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbfaf5",
+  "theme_color": "#e2b170",
+  "icons": [
+    {
+      "src": "/secure_chat_app_icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/secure_chat_app_icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "orientation": "portrait"
+}
