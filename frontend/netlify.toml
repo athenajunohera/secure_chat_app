@@ -1,5 +1,6 @@
-command = "npm install && npm run build"
-publish = "dist"
+[build]
+  command = "npm install && npm run build"
+  publish = "dist"
 
 [[redirects]]
   from = "/*"
