@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { generateKeyPair, exportKey } from '../utils/crypto';
+import { generateKeyPair, exportKey, encryptPrivateKey, decryptPrivateKey } from '../utils/crypto';
 
 // Setup axios defaults
 const isProd = import.meta.env.PROD;
@@ -53,6 +53,21 @@ export const AuthProvider = ({ children }) => {
             }
 
             if (!storedKey) {
+                // TRY SYNC: If no key locally, attempt to recovery it using the password
+                const { encryptedPrivateKey } = res.data;
+                if (encryptedPrivateKey) {
+                    try {
+                        // Use user's current password as the recovery key for the private key
+                        storedKey = await decryptPrivateKey(encryptedPrivateKey, password, username);
+                        localStorage.setItem(`privateKey_${username}`, storedKey);
+                        console.log("Magical Sync: Key recovered from the Realm!");
+                    } catch (err) {
+                        console.warn("Key Recovery Failed. Password may have changed or backup is old.");
+                    }
+                }
+            }
+
+            if (!storedKey) {
                 alert("CRITICAL WARNING: No private key found for this user on this browser! Due to End-to-End Encryption, you strictly won't be able to decrypt your incoming messages. If this is a test, please register a brand new user on this specific tab.");
             }
 
@@ -95,10 +110,17 @@ export const AuthProvider = ({ children }) => {
             // 1. Generate Keys
             const keyPair = await generateKeyPair();
             const publicKeyExported = await exportKey(keyPair.publicKey);
-            const privateKeyExported = await exportKey(keyPair.privateKey);
+            // 1b. Encrypt Private Key for Cloud Backup (Real App magic)
+            const encryptedPrivateKey = await encryptPrivateKey(privateKeyExported, password, username);
 
             // 2. Send to Server
-            await api.post('/auth/register', { username, password, publicKey: publicKeyExported, avatar });
+            await api.post('/auth/register', {
+                username,
+                password,
+                publicKey: publicKeyExported,
+                avatar,
+                encryptedPrivateKey
+            });
 
             // 3. Store Private Key Locally (Associated with username)
             localStorage.setItem(`privateKey_${username}`, privateKeyExported);

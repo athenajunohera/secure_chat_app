@@ -155,3 +155,66 @@ export async function decryptMessage(packageData, privateKey, isSender = false) 
         return "[Decryption Failed]";
     }
 }
+// --- SYMMETRIC ENCRYPTION FOR KEY BACKUP ---
+
+// Derives a 256-bit key from a password and salt using PBKDF2
+async function deriveMasterKey(password, salt) {
+    const encoder = new TextEncoder();
+    const passwordKey = await window.crypto.subtle.importKey(
+        "raw",
+        encoder.encode(password),
+        "PBKDF2",
+        false,
+        ["deriveKey"]
+    );
+
+    return await window.crypto.subtle.deriveKey(
+        {
+            name: "PBKDF2",
+            salt: encoder.encode(salt),
+            iterations: 100000,
+            hash: "SHA-256",
+        },
+        passwordKey,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+    );
+}
+
+// Encrypts the exported RSA private key using a password and salt
+export async function encryptPrivateKey(privateKeyPEM, password, salt) {
+    const masterKey = await deriveMasterKey(password, salt);
+    const iv = window.crypto.getRandomValues(new Uint8Array(12));
+    const encoder = new TextEncoder();
+
+    const encrypted = await window.crypto.subtle.encrypt(
+        { name: "AES-GCM", iv },
+        masterKey,
+        encoder.encode(privateKeyPEM)
+    );
+
+    return JSON.stringify({
+        iv: arrayBufferToBase64(iv),
+        ciphertext: arrayBufferToBase64(encrypted)
+    });
+}
+
+// Decrypts the RSA private key using a password and salt
+export async function decryptPrivateKey(encryptedData, password, salt) {
+    try {
+        const { iv, ciphertext } = JSON.parse(encryptedData);
+        const masterKey = await deriveMasterKey(password, salt);
+
+        const decrypted = await window.crypto.subtle.decrypt(
+            { name: "AES-GCM", iv: base64ToArrayBuffer(iv) },
+            masterKey,
+            base64ToArrayBuffer(ciphertext)
+        );
+
+        return new TextDecoder().decode(decrypted);
+    } catch (error) {
+        console.error("Key backup decryption failed:", error);
+        throw new Error("Incorrect master password or corrupted key backup.");
+    }
+}
