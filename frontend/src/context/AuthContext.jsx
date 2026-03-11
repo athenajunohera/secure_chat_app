@@ -116,16 +116,18 @@ export const AuthProvider = ({ children }) => {
             // 1. Generate Keys
             const keyPair = await generateKeyPair();
             const publicKeyExported = await exportKey(keyPair.publicKey);
+            const privateKeyExported = await exportKey(keyPair.privateKey);
+
             // 1b. Encrypt Private Key for Cloud Backup (Real App magic)
             const encryptedPrivateKey = await encryptPrivateKey(privateKeyExported, password, username);
 
             // 2. Send to Server
-            await api.post('/auth/register', {
-                username,
-                password,
-                publicKey: publicKeyExported,
+            await api.post('/auth/register', { 
+                username, 
+                password, 
+                publicKey: publicKeyExported, 
                 avatar,
-                encryptedPrivateKey
+                encryptedPrivateKey 
             });
 
             // 3. Store Private Key Locally (Associated with username)
