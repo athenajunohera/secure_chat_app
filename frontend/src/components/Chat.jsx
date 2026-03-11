@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, memo } from 'react';
 import io from 'socket.io-client';
 import { useAuth, FOREST_AVATARS } from '../context/AuthContext';
 import { encryptMessage, decryptMessage, importKey } from '../utils/crypto';
@@ -287,7 +287,7 @@ function Chat() {
         }, 2000);
     };
 
-    const displayedMessages = messages.filter(m => m.chatMate === currentRoom);
+    const displayedMessages = useMemo(() => messages.filter(m => m.chatMate === currentRoom), [messages, currentRoom]);
 
     useEffect(() => {
         if (currentRoom && displayedMessages.length > 0) {
@@ -305,13 +305,13 @@ function Chat() {
     }, [currentRoom, displayedMessages.length]);
 
     // Painted petals falling slowly, extremely staggered to fall one by one
-    const petalOrbs = Array.from({ length: 5 }).map((_, i) => ({
+    const petalOrbs = useMemo(() => Array.from({ length: 5 }).map((_, i) => ({
         left: `${Math.random() * 80 + 10}%`,
         duration: `${Math.random() * 10 + 40}s`, // 40-50s fall time
         delay: `${i * 10 + Math.random() * 3}s`, // Every 10 seconds a new petal appears
         size: `${Math.random() * 15 + 15}px`,
         rotDuration: `${Math.random() * 8 + 6}s`
-    }));
+    })), []);
 
     return (
         <div className="flex h-screen bg-[#fbfaf5] text-[#2c1d11] overflow-hidden relative canvas-grain chat-screen">
@@ -443,29 +443,13 @@ function Chat() {
                             </div>
 
                             <div className="flex-1 overflow-y-auto p-12 space-y-10 custom-scrollbar-hidden relative">
-                                {displayedMessages.map((msg, idx) => {
-                                    const isMe = msg.author === user.username;
-                                    return (
-                                        <div key={idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-fade-in`}>
-                                            <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[70%]`}>
-                                                <div className={`px-10 py-7 rounded-[3.5rem] text-[18px] leading-relaxed transition-all shadow-[0_15px_40px_rgba(0,0,0,0.15)] border border-white/20 ${isMe
-                                                    ? 'bg-gradient-to-br from-[#e2b170] to-[#f4abb4] text-white rounded-br-none shadow-[0_20px_50px_rgba(226,177,112,0.5)]'
-                                                    : 'bg-white/20 backdrop-blur-md border-white/40 text-white rounded-bl-none italic parchment-bubble drop-shadow-md'
-                                                    }`}
-                                                >
-                                                    {msg.content?.startsWith('data:image/') ? (
-                                                        <img src={msg.content} alt="Magical Artwork" className="max-w-[250px] rounded-xl shadow-lg border-2 border-white/30" />
-                                                    ) : (
-                                                        msg.content
-                                                    )}
-                                                </div>
-                                                <div className={`mt-3 px-6 text-[11px] font-black text-white/70 tracking-[0.3em] uppercase drop-shadow-sm ${isMe ? 'text-right' : ''}`}>
-                                                    {msg.time} {isMe && (msg.status === 'read' ? '✨✨' : '✨')}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                                {displayedMessages.map((msg, idx) => (
+                                    <MessageItem 
+                                        key={msg._id || idx} 
+                                        msg={msg} 
+                                        isMe={msg.author === user.username} 
+                                    />
+                                ))}
                                 <div ref={messagesEndRef} className="h-4" />
                             </div>
 
@@ -549,5 +533,28 @@ function Chat() {
         </div>
     );
 }
+
+const MessageItem = memo(({ msg, isMe }) => {
+    return (
+        <div className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-fade-in`}>
+            <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[70%]`}>
+                <div className={`px-10 py-7 rounded-[3.5rem] text-[18px] leading-relaxed transition-all shadow-[0_15px_40px_rgba(0,0,0,0.15)] border border-white/20 ${isMe
+                    ? 'bg-gradient-to-br from-[#e2b170] to-[#f4abb4] text-white rounded-br-none shadow-[0_20px_50px_rgba(226,177,112,0.5)]'
+                    : 'bg-white/20 backdrop-blur-md border-white/40 text-white rounded-bl-none italic parchment-bubble drop-shadow-md'
+                    }`}
+                >
+                    {msg.content?.startsWith('data:image/') ? (
+                        <img src={msg.content} alt="Magical Artwork" className="max-w-[250px] rounded-xl shadow-lg border-2 border-white/30" />
+                    ) : (
+                        msg.content
+                    )}
+                </div>
+                <div className={`mt-3 px-6 text-[11px] font-black text-white/70 tracking-[0.3em] uppercase drop-shadow-sm ${isMe ? 'text-right' : ''}`}>
+                    {msg.time} {isMe && (msg.status === 'read' ? '✨✨' : '✨')}
+                </div>
+            </div>
+        </div>
+    );
+});
 
 export default Chat;
