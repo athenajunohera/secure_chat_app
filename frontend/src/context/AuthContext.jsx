@@ -29,16 +29,22 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const storedUser = sessionStorage.getItem('user');
-        const storedKey = sessionStorage.getItem('privateKey');
-        const token = sessionStorage.getItem('token');
+        try {
+            const storedUser = sessionStorage.getItem('user');
+            const storedKey = sessionStorage.getItem('privateKey');
+            const token = sessionStorage.getItem('token');
 
-        if (storedUser && token) {
-            setUser(JSON.parse(storedUser));
-            setPrivateKey(storedKey !== "null" ? storedKey : null);
-            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            if (storedUser && token && storedUser !== "undefined") {
+                setUser(JSON.parse(storedUser));
+                setPrivateKey(storedKey !== "null" ? storedKey : null);
+                api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            }
+        } catch (err) {
+            console.error("Auth init failed:", err);
+            sessionStorage.clear(); // Clear potentially corrupted data
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     }, []);
 
     const login = async (rawUsername, password) => {
