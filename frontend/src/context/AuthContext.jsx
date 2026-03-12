@@ -4,8 +4,9 @@ import { generateKeyPair, exportKey, encryptPrivateKey, decryptPrivateKey } from
 
 // Setup axios defaults
 const isProd = import.meta.env.PROD;
+const RENDER_API = "https://enchanted-chat-api.onrender.com/api";
 const api = axios.create({
-    baseURL: isProd ? import.meta.env.VITE_API_URL : `http://${window.location.hostname}:5050/api`,
+    baseURL: isProd ? (import.meta.env.VITE_API_URL || RENDER_API) : `http://${window.location.hostname}:5050/api`,
 });
 
 const AuthContext = createContext();

@@ -152,7 +152,10 @@ export async function decryptMessage(packageData, privateKey, isSender = false) 
         return new TextDecoder().decode(decryptedContent);
     } catch (error) {
         console.error("Decryption failed:", error);
-        return "[Decryption Failed]";
+        if (isSender) {
+            return "📜 [Decryption Failed] sender-copy mismatch";
+        }
+        return "🔒 [Decryption Failed] secure key mismatch";
     }
 }
 // --- SYMMETRIC ENCRYPTION FOR KEY BACKUP ---

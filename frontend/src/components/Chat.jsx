@@ -6,7 +6,8 @@ import axios from 'axios';
 import EmojiPicker from 'emoji-picker-react';
 
 const isProd = import.meta.env.PROD;
-const socket = io(isProd ? import.meta.env.VITE_API_URL?.replace('/api', '') : `http://${window.location.hostname}:5050`);
+const RENDER_URL = "https://enchanted-chat-api.onrender.com";
+const socket = io(isProd ? (import.meta.env.VITE_API_URL?.replace('/api', '') || RENDER_URL) : `http://${window.location.hostname}:5050`);
 
 function Chat() {
     const { user, privateKey, logout, updateAvatar } = useAuth();
@@ -42,7 +43,7 @@ function Chat() {
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const baseURL = isProd ? import.meta.env.VITE_API_URL : `http://${window.location.hostname}:5050/api`;
+                const baseURL = isProd ? (import.meta.env.VITE_API_URL || "https://enchanted-chat-api.onrender.com/api") : `http://${window.location.hostname}:5050/api`;
                 if (!currentRoom) return;
 
                 const res = await axios.get(`${baseURL}/messages/dm`, {
@@ -195,7 +196,7 @@ function Chat() {
         let recipientPublicKey = null;
 
         try {
-            const baseURL = isProd ? import.meta.env.VITE_API_URL : `http://${window.location.hostname}:5050/api`;
+            const baseURL = isProd ? (import.meta.env.VITE_API_URL || "https://enchanted-chat-api.onrender.com/api") : `http://${window.location.hostname}:5050/api`;
             const res = await axios.get(`${baseURL}/auth/key/${recipientUsername}`);
             if (res.data.publicKey) {
                 recipientPublicKey = await importKey(res.data.publicKey, 'public');
