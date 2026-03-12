@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, memo } from 'react';
 import io from 'socket.io-client';
-import { useAuth, FOREST_AVATARS } from '../context/AuthContext';
+import { useAuth, FOREST_AVATARS, api } from '../context/AuthContext';
 import { encryptMessage, decryptMessage, importKey } from '../utils/crypto';
 import axios from 'axios';
 import EmojiPicker from 'emoji-picker-react';
@@ -43,10 +43,9 @@ function Chat() {
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const baseURL = isProd ? (import.meta.env.VITE_API_URL || "https://enchanted-chat-api.onrender.com/api") : `http://${window.location.hostname}:5050/api`;
                 if (!currentRoom) return;
 
-                const res = await axios.get(`${baseURL}/messages/dm`, {
+                const res = await api.get('/messages/dm', {
                     params: { user1: user.username, user2: currentRoom }
                 });
 
@@ -196,8 +195,7 @@ function Chat() {
         let recipientPublicKey = null;
 
         try {
-            const baseURL = isProd ? (import.meta.env.VITE_API_URL || "https://enchanted-chat-api.onrender.com/api") : `http://${window.location.hostname}:5050/api`;
-            const res = await axios.get(`${baseURL}/auth/key/${recipientUsername}`);
+            const res = await api.get(`/auth/key/${recipientUsername}`);
             if (res.data.publicKey) {
                 recipientPublicKey = await importKey(res.data.publicKey, 'public');
             } else {
