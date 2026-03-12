@@ -6,10 +6,12 @@ function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [selectedAvatar, setSelectedAvatar] = useState(FOREST_AVATARS[0].id);
+    const [loading, setLoading] = useState(false);
     const { login, register } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             if (isLogin) {
                 await login(username, password);
@@ -18,6 +20,9 @@ function Login() {
             }
         } catch (err) {
             console.error(err);
+            alert("Magical interruption: " + err.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -97,9 +102,10 @@ function Login() {
                             <>
                                 <button
                                     type="submit"
-                                    className="w-full py-4 rounded-full bg-gradient-to-r from-[#e2b170] to-[#f4abb4] text-white font-spiritual font-bold uppercase tracking-[0.25em] hover:brightness-110 active:scale-[0.98] transition-all shadow-xl shadow-[#3d2b1f]/10"
+                                    disabled={loading}
+                                    className={`w-full py-4 rounded-full bg-gradient-to-r from-[#e2b170] to-[#f4abb4] text-white font-spiritual font-bold uppercase tracking-[0.25em] hover:brightness-110 active:scale-[0.98] transition-all shadow-xl shadow-[#3d2b1f]/10 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
-                                    Enter The Realm
+                                    {loading ? 'Manifesting...' : 'Enter The Realm'}
                                 </button>
                                 <button
                                     type="button"
@@ -113,9 +119,10 @@ function Login() {
                             <>
                                 <button
                                     type="submit"
-                                    className="w-full py-4 rounded-full bg-gradient-to-r from-[#e2b170] to-[#f4abb4] text-white font-spiritual font-bold uppercase tracking-[0.25em] hover:brightness-110 active:scale-[0.98] transition-all shadow-xl shadow-[#3d2b1f]/10"
+                                    disabled={loading}
+                                    className={`w-full py-4 rounded-full bg-gradient-to-r from-[#e2b170] to-[#f4abb4] text-white font-spiritual font-bold uppercase tracking-[0.25em] hover:brightness-110 active:scale-[0.98] transition-all shadow-xl shadow-[#3d2b1f]/10 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
-                                    Claim Thy Seat
+                                    {loading ? 'Binding...' : 'Claim Thy Seat'}
                                 </button>
                                 <button
                                     type="button"
