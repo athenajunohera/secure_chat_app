@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         try {
             // Self-Healing Mechanism: If version mismatch, purge local state
-            const currentVersion = "1.2";
+            const currentVersion = "1.3";
             const savedVersion = localStorage.getItem('app_version');
             if (savedVersion !== currentVersion) {
                 sessionStorage.clear();
