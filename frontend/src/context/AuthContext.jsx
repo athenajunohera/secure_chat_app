@@ -30,9 +30,15 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!window.crypto || !window.crypto.subtle) {
+            console.error("Crypto API missing. Likely non-HTTPS connection.");
+        }
+    }, []);
+
+    useEffect(() => {
         try {
             // Self-Healing Mechanism: If version mismatch, purge local state
-            const currentVersion = "1.1";
+            const currentVersion = "1.2";
             const savedVersion = localStorage.getItem('app_version');
             if (savedVersion !== currentVersion) {
                 sessionStorage.clear();

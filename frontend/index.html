@@ -42,17 +42,28 @@
 <body>
   <div id="root"></div>
   <script>
-    // Force unregister any old service workers that might be causing "Normal Mode" crashes
+    // 1. Mobile Health Check (Safety First)
+    window.onerror = function(msg, url, line) {
+        alert("Enchanted Error Detected: " + msg + " (Line: " + line + ")");
+        return false;
+    };
+
+    // 2. HTTPS Portal Check (Security Requirement)
+    if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
+        window.location.href = window.location.href.replace('http:', 'https:');
+    }
+
+    // 3. Purge Ancient Spirits (Service Worker Cleanup)
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(function(registrations) {
         for(let registration of registrations) {
           registration.unregister();
-          console.log("Service Worker Unregistered - Purification Success!");
+          console.log("Purification Success!");
         }
       });
     }
   </script>
-  <script type="module" src="/src/main.jsx"></script>
+  <script type="module" src="/src/main.jsx?v=1.2"></script>
 </body>
 
 </html>
