@@ -41,6 +41,17 @@
 
 <body>
   <div id="root"></div>
+  <script>
+    // Force unregister any old service workers that might be causing "Normal Mode" crashes
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          registration.unregister();
+          console.log("Service Worker Unregistered - Purification Success!");
+        }
+      });
+    }
+  </script>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 
